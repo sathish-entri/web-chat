@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Widget Test Page — My Sample Website</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    }
+    .demo-card {
+      background: white; border-radius: 20px; padding: 48px;
+      text-align: center; max-width: 520px; width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { font-size: 2rem; color: #1a1a2e; margin-bottom: 12px; }
+    p { color: #6b7280; line-height: 1.7; font-size: 1rem; }
+    .badge { display: inline-block; background: #f0edff; color: #6C63FF; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-top: 16px; }
+    .steps { text-align: left; background: #f8f9fc; border-radius: 12px; padding: 20px; margin-top: 24px; }
+    .step { display: flex; gap: 12px; margin-bottom: 12px; font-size: 0.875rem; color: #374151; }
+    .step-num { width: 24px; height: 24px; border-radius: 50%; background: #6C63FF; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    code { background: #e8f4fd; color: #0891b2; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="demo-card">
+    <div style="font-size:3rem;margin-bottom:16px">💬</div>
+    <h1>Sample Customer Website</h1>
+    <p>This is a demo page showing how the WebChat widget looks when embedded on a customer's website. Look for the chat bubble in the bottom-right corner!</p>
+    <div class="badge">🟢 Chat widget is active</div>
+
+    <div class="steps">
+      <div style="font-size:0.75rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px">How it works</div>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>Register on the <strong>WebChat Portal</strong> and create your website</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>Copy the <code>&lt;script&gt;</code> embed code from the Websites page</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>Paste it before <code>&lt;/body&gt;</code> on your website</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>Visitors can now chat — you reply from your <strong>WebChat Dashboard!</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       WEBCHAT WIDGET EMBED CODE
+       Replace PASTE_YOUR_WIDGET_ID_HERE with your actual Widget ID
+       from the WebChat Portal → Websites → Get Widget Code
+       ============================================ -->
+  <script>
+    window.WebChatConfig = { widgetId: 'PASTE_YOUR_WIDGET_ID_HERE' };
+  </script>
+  <script src="http://localhost:5000/widget/widget.js" async defer></script>
+</body>
+</html>
