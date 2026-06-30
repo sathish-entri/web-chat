@@ -53,14 +53,12 @@
     </div>
   </div>
 
-  <!-- ============================================
-       WEBCHAT WIDGET EMBED CODE
-       Replace PASTE_YOUR_WIDGET_ID_HERE with your actual Widget ID
-       from the WebChat Portal → Websites → Get Widget Code
-       ============================================ -->
   <script>
-    window.WebChatConfig = { widgetId: 'PASTE_YOUR_WIDGET_ID_HERE' };
+    // Dynamically get widgetId from URL search params (e.g., test.html?id=YOUR_WIDGET_ID)
+    const urlParams = new URLSearchParams(window.location.search);
+    const widgetId = urlParams.get('id') || 'PASTE_YOUR_WIDGET_ID_HERE';
+    window.WebChatConfig = { widgetId: widgetId };
   </script>
-  <script src="http://localhost:5000/widget/widget.js" async defer></script>
+  <script src="https://webchat-backend-n4zb.onrender.com/widget/widget.js" async defer></script>
 </body>
 </html>
