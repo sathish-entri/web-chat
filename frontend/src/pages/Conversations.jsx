@@ -101,16 +101,6 @@ export default function Conversations() {
 
     try {
       await sendMessage(id, content);
-      // Emit via socket
-      if (socket) {
-        const msg = {
-          conversationId: id,
-          sender: 'agent',
-          content,
-          createdAt: new Date(),
-        };
-        socket.to(`conv_${id}`)?.emit('message:receive', { message: msg, conversationId: id });
-      }
     } catch (e) {
       toast.error('Failed to send message');
     } finally {
