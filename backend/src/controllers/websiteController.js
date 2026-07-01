@@ -123,7 +123,7 @@ const getWidgetCode = async (req, res, next) => {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
-    const widgetUrl = process.env.WIDGET_URL || 'http://localhost:5000';
+    const widgetUrl = process.env.WIDGET_URL || `${req.protocol}://${req.get('host')}`;
     const embedCode = `<!-- WebChat Widget -->
 <script>
   window.WebChatConfig = { widgetId: '${website.widgetId}' };

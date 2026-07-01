@@ -58,7 +58,13 @@
     const urlParams = new URLSearchParams(window.location.search);
     const widgetId = urlParams.get('id') || 'PASTE_YOUR_WIDGET_ID_HERE';
     window.WebChatConfig = { widgetId: widgetId };
+
+    // Dynamically load widget.js from the same server hosting this test page
+    const script = document.createElement('script');
+    script.src = window.location.origin + '/widget/widget.js';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
   </script>
-  <script src="https://webchat-backend-n4zb.onrender.com/widget/widget.js" async defer></script>
 </body>
 </html>

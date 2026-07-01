@@ -116,10 +116,20 @@ export default function Websites() {
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button
                     className="btn btn-primary btn-sm"
-                    style={{ flex: 1 }}
+                    style={{ flex: 1.5 }}
                     onClick={() => handleGetCode(site)}
                   >
-                    {'</>'} Get Widget Code
+                    {'</>'} Embed
+                  </button>
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    style={{ flex: 1, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.05)', color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
+                    onClick={() => {
+                      const backendUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+                      window.open(`${backendUrl}/widget/test.html?id=${site.widgetId}`, '_blank');
+                    }}
+                  >
+                    ⚡ Test
                   </button>
                   <button
                     className="btn btn-danger btn-sm"
