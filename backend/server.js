@@ -26,6 +26,7 @@ const conversationRoutes = require('./src/routes/conversations');
 const widgetRoutes = require('./src/routes/widget');
 const botRoutes = require('./src/routes/bot');
 const analyticsRoutes = require('./src/routes/analytics');
+const customerRoutes = require('./src/routes/customers');
 
 // Connect to database
 connectDB();
@@ -105,6 +106,7 @@ app.use('/api/conversations', conversationRoutes);
 app.use('/api/widget', widgetRoutes);
 app.use('/api/bot', botRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/customers', customerRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

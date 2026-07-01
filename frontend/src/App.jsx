@@ -10,6 +10,7 @@ import Websites from './pages/Websites';
 import Analytics from './pages/Analytics';
 import BotPage from './pages/BotPage';
 import Settings from './pages/Settings';
+import Customers from './pages/Customers';
 
 function ProtectedRoute({ children }) {
   const { token } = useAuthStore();
@@ -52,6 +53,7 @@ export default function App() {
           <Route path="analytics" element={<Analytics />} />
           <Route path="bot" element={<BotPage />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="customers" element={<Customers />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
