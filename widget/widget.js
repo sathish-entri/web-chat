@@ -427,8 +427,8 @@
           <button id="wc-close-btn" aria-label="Close Chat">${icons.close}</button>
         </div>
 
-        <!-- Pre-Chat Form -->
-        <div id="wc-pre-form">
+        <!-- Pre-Chat Form (hidden by default) -->
+        <div id="wc-pre-form" style="display:none">
           <h3>👋 Welcome!</h3>
           <p>Please fill in your details and we'll get you connected right away.</p>
           <div class="wc-input-group">
@@ -442,8 +442,8 @@
           <button id="wc-start-btn">Start Chat 💬</button>
         </div>
 
-        <!-- Messages Area (hidden initially) -->
-        <div id="wc-messages" style="display:none"></div>
+        <!-- Messages Area (shown by default) -->
+        <div id="wc-messages" style="display:flex"></div>
 
         <!-- Typing Indicator -->
         <div id="wc-typing" style="display:none">
@@ -451,8 +451,8 @@
           <div class="wc-typing-dots"><span></span><span></span><span></span></div>
         </div>
 
-        <!-- Input Area (hidden initially) -->
-        <div id="wc-input-area" style="display:none">
+        <!-- Input Area (shown by default) -->
+        <div id="wc-input-area" style="display:flex">
           <input type="file" id="wc-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none" />
           <button id="wc-attach-btn" aria-label="Attach File">${icons.attach}</button>
           <textarea id="wc-input" placeholder="Type a message..." rows="1"></textarea>
@@ -582,11 +582,53 @@
   const sendMessage = async () => {
     const input = document.getElementById('wc-input');
     const content = input ? input.value.trim() : '';
-    if (!content || !state.conversation) return;
+    if (!content) return;
 
     input.value = '';
     input.style.height = 'auto';
     document.getElementById('wc-send-btn').disabled = true;
+
+    // Auto-create conversation on first message
+    if (!state.conversation) {
+      try {
+        const { browser, os, device } = getBrowserInfo();
+        const result = await api.post(`/api/widget/${widgetId}/conversations`, {
+          name: 'Visitor',
+          email: '',
+          sessionId: state.sessionId,
+          currentPage: window.location.href,
+          browser, os, device,
+        });
+
+        if (result.success) {
+          state.conversation = result.conversation;
+          state.visitor = result.visitor;
+          state.messages = result.messages || [];
+          localStorage.setItem('wc_conv_' + widgetId, result.conversation._id);
+
+          // Update header
+          const headerName = document.getElementById('wc-header-name');
+          if (headerName && result.websiteSettings) {
+            headerName.textContent = result.websiteSettings.agentName || 'Support';
+          }
+
+          // Init socket
+          await loadSocketIO();
+          initSocket();
+        } else {
+          addSystemMessage('Failed to connect to chat. Please try again.');
+          document.getElementById('wc-send-btn').disabled = false;
+          input.value = content;
+          return;
+        }
+      } catch (err) {
+        console.error('[WebChat] Auto-start conversation error', err);
+        addSystemMessage('Connection error. Please try again.');
+        document.getElementById('wc-send-btn').disabled = false;
+        input.value = content;
+        return;
+      }
+    }
 
     // Clear typing
     if (state.socket) {
@@ -830,14 +872,56 @@
       // Create widget HTML
       createWidget(result.config);
 
+      // Bind events
+      bindEvents();
+
       // Check if visitor already has a session - try to resume
       const storedConvId = localStorage.getItem('wc_conv_' + widgetId);
       if (storedConvId) {
         state.preFormSubmitted = true;
-      }
+        // Auto-resume conversation in background
+        try {
+          const { browser, os, device } = getBrowserInfo();
+          const resumeResult = await api.post(`/api/widget/${widgetId}/conversations`, {
+            sessionId: state.sessionId,
+            currentPage: window.location.href,
+            browser, os, device,
+          });
 
-      // Bind events
-      bindEvents();
+          if (resumeResult.success) {
+            state.conversation = resumeResult.conversation;
+            state.visitor = resumeResult.visitor;
+            state.messages = resumeResult.messages || [];
+
+            // Update header
+            const headerName = document.getElementById('wc-header-name');
+            if (headerName && resumeResult.websiteSettings) {
+              headerName.textContent = resumeResult.websiteSettings.agentName || 'Support';
+            }
+
+            // Init socket
+            await loadSocketIO();
+            initSocket();
+
+            // Render existing messages
+            state.messages.forEach(renderMessage);
+            scrollToBottom();
+          }
+        } catch (err) {
+          console.error('[WebChat] Resume conversation error', err);
+        }
+      } else {
+        // First-time visitor: display welcome message locally
+        const welcomeMessage = settings.welcomeMessage || 'Hi! How can we help you today?';
+        renderMessage({
+          _id: 'welcome_temp',
+          sender: 'agent',
+          senderName: settings.agentName || 'Support',
+          content: welcomeMessage,
+          type: 'text',
+          createdAt: new Date(),
+        });
+      }
 
       console.log('[WebChat] ✅ Widget initialized for', widgetId);
     } catch (err) {
