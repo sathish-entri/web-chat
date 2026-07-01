@@ -251,7 +251,7 @@ export default function Conversations() {
                             {msg.sender === 'bot' ? '🤖' : (msg.senderName?.[0] || 'A')}
                           </div>
                         )}
-                        <div>
+                        <div className="msg-bubble-container">
                           <div className="msg-bubble">
                             {msg.type === 'image' && msg.fileUrl ? (
                               <img src={msg.fileUrl} alt="img" style={{ maxWidth: 200, borderRadius: 10 }} />

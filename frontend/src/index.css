@@ -356,7 +356,7 @@ h4 { font-size: 0.95rem; font-weight: 600; }
 .msg-group.visitor { align-items: flex-end; }
 .msg-group.agent, .msg-group.bot { align-items: flex-start; }
 
-.msg-row { display: flex; align-items: flex-end; gap: 10px; }
+.msg-row { display: flex; align-items: flex-end; gap: 10px; width: 100%; }
 .msg-group.visitor .msg-row { flex-direction: row-reverse; }
 
 .msg-avatar {
@@ -367,9 +367,28 @@ h4 { font-size: 0.95rem; font-weight: 600; }
 }
 .msg-avatar.bot { background: linear-gradient(135deg, #3B82F6, #06B6D4); }
 
+.msg-bubble-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+  width: fit-content;
+}
+.msg-group.visitor .msg-bubble-container {
+  align-items: flex-end;
+}
+.msg-group.agent .msg-bubble-container,
+.msg-group.bot .msg-bubble-container {
+  align-items: flex-start;
+}
+
 .msg-bubble {
-  max-width: 68%; padding: 10px 14px; border-radius: 18px;
-  font-size: 0.875rem; line-height: 1.55; word-break: break-word;
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  word-break: break-word;
   animation: msg-in 0.25s cubic-bezier(0.34,1.56,0.64,1);
   position: relative;
 }
@@ -581,13 +600,71 @@ h4 { font-size: 0.95rem; font-weight: 600; }
 .color-swatch.selected { border-color: white; transform: scale(1.15); }
 
 /* ── RESPONSIVE ── */
+.mobile-menu-toggle {
+  display: none;
+}
+
 @media (max-width: 1024px) {
   .info-panel { display: none; }
   .conv-list { width: 280px; }
 }
+
 @media (max-width: 768px) {
   .conv-list { display: none; }
   .conv-list.mobile-open { display: flex; width: 100%; position: absolute; z-index: 10; }
+
+  /* Slide-out mobile drawer sidebar */
+  .sidebar {
+    position: fixed !important;
+    left: -260px;
+    top: 0;
+    bottom: 0;
+    height: 100vh !important;
+    z-index: 1000 !important;
+    box-shadow: var(--shadow-lg);
+    width: var(--sidebar-expanded) !important;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    align-items: flex-start !important;
+    padding: 20px 12px !important;
+  }
+  .sidebar.expanded {
+    left: 0 !important;
+  }
+  .sidebar .nav-label {
+    display: block !important;
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 10px;
+    left: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    z-index: 999;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: var(--transition);
+  }
+  .mobile-menu-toggle:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+  }
+  .mobile-menu-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  /* Shift topbars so they don't overlap with the hamburger toggle */
+  .topbar {
+    padding-left: 64px !important;
+  }
 }
 
 /* ── ANIMATIONS ── */

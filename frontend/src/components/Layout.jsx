@@ -35,7 +35,7 @@ const NAV_ITEMS = [
 ];
 
 export default function Layout() {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [sidebarExpanded, setSidebarExpanded] = useState(window.innerWidth >= 768);
   const { user, logout } = useAuthStore();
   const { unreadTotal, fetchConversations, addIncomingMessage, updateConversationFromSocket, setTyping } = useConversationStore();
   const { fetchWebsites, websites } = useWebsiteStore();
@@ -44,6 +44,14 @@ export default function Layout() {
   useEffect(() => {
     fetchWebsites();
     fetchConversations();
+
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setSidebarExpanded(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Setup Socket.IO
@@ -155,7 +163,25 @@ export default function Layout() {
       </nav>
 
       {/* Main Content */}
-      <div className="main-content">
+      <div 
+        className="main-content"
+        onClick={() => {
+          if (window.innerWidth < 768 && sidebarExpanded) {
+            setSidebarExpanded(false);
+          }
+        }}
+      >
+        {!sidebarExpanded && (
+          <button 
+            className="mobile-menu-toggle" 
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent closing it instantly
+              setSidebarExpanded(true);
+            }}
+          >
+            <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+          </button>
+        )}
         <Outlet />
       </div>
     </div>
