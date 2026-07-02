@@ -34,6 +34,7 @@ const WebsiteSchema = new mongoose.Schema({
     logo: { type: String, default: '' },
     requireEmail: { type: Boolean, default: true },
     showBranding: { type: Boolean, default: true },
+    botFallbackEnabled: { type: Boolean, default: true },
   },
   botEnabled: { type: Boolean, default: true },
   isActive: { type: Boolean, default: true },

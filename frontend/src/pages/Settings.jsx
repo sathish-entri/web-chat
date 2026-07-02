@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import useAuthStore from '../stores/authStore';
 import useWebsiteStore from '../stores/websiteStore';
@@ -16,10 +16,20 @@ export default function Settings() {
     activeWebsite?.settings || {
       primaryColor: '#6C63FF', welcomeMessage: 'Hi! 👋 How can we help you today?',
       agentName: 'Support Agent', botName: 'Support Bot', position: 'bottom-right', requireEmail: true,
+      botFallbackEnabled: true,
     }
   );
+  const [botEnabled, setBotEnabled] = useState(activeWebsite?.botEnabled !== false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingWidget, setSavingWidget] = useState(false);
+
+  useEffect(() => {
+    if (activeWebsite) {
+      setSelectedSite(activeWebsite._id);
+      setWidgetSettings(activeWebsite.settings || {});
+      setBotEnabled(activeWebsite.botEnabled !== false);
+    }
+  }, [activeWebsite]);
 
   const handleSiteChange = (id) => {
     setSelectedSite(id);
@@ -27,6 +37,7 @@ export default function Settings() {
     if (site) {
       setActiveWebsite(site);
       setWidgetSettings(site.settings || {});
+      setBotEnabled(site.botEnabled !== false);
     }
   };
 
@@ -63,7 +74,7 @@ export default function Settings() {
     if (!selectedSite) return;
     setSavingWidget(true);
     try {
-      await updateWebsite(selectedSite, { settings: widgetSettings });
+      await updateWebsite(selectedSite, { settings: widgetSettings, botEnabled });
       toast.success('Widget settings saved!');
     } catch {
       toast.error('Failed to save settings');
@@ -199,6 +210,35 @@ export default function Settings() {
                   </label>
                   <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
                     {widgetSettings.requireEmail !== false ? 'Required' : 'Optional'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Enable ChatBot (Auto-Replies)</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8 }}>
+                  <label className="toggle">
+                    <input type="checkbox" checked={botEnabled}
+                      onChange={e => setBotEnabled(e.target.checked)} />
+                    <span className="toggle-slider" />
+                  </label>
+                  <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                    {botEnabled ? 'Active' : 'Disabled'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Enable Default Bot Replies</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8 }}>
+                  <label className="toggle">
+                    <input type="checkbox" checked={widgetSettings.botFallbackEnabled !== false}
+                      disabled={!botEnabled}
+                      onChange={e => setWidgetSettings({...widgetSettings, botFallbackEnabled: e.target.checked})} />
+                    <span className="toggle-slider" style={{ opacity: botEnabled ? 1 : 0.5 }} />
+                  </label>
+                  <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', opacity: botEnabled ? 1 : 0.5 }}>
+                    {widgetSettings.botFallbackEnabled !== false ? 'Enabled' : 'Disabled'}
                   </span>
                 </div>
               </div>

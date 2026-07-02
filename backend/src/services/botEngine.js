@@ -1,4 +1,5 @@
 const BotRule = require('../models/BotRule');
+const Website = require('../models/Website');
 
 /**
  * Rule-based bot engine
@@ -7,12 +8,11 @@ const BotRule = require('../models/BotRule');
  */
 const getResponse = async (websiteId, message) => {
   try {
+    const website = await Website.findById(websiteId);
     const rules = await BotRule.find({
       websiteId,
       isActive: true,
     }).sort({ priority: -1 });
-
-    if (!rules.length) return getDefaultResponse(message);
 
     const lowerMessage = message.toLowerCase().trim();
 
@@ -40,6 +40,11 @@ const getResponse = async (websiteId, message) => {
           return rule.response;
         }
       }
+    }
+
+    // Bypass fallback messages if disabled in website settings
+    if (website && website.settings && website.settings.botFallbackEnabled === false) {
+      return null;
     }
 
     return getDefaultResponse(message);
